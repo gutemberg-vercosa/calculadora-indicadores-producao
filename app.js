@@ -96,6 +96,56 @@ const CALCULADORAS = {
       }
     },
   },
+
+  lead: {
+    exemplo: { wip: 3000, producao: 600, horas: 16, va: 45 },
+
+    validar(v) {
+      if (v.producao === 0) return 'A produção diária precisa ser maior que zero.';
+      if (v.horas === 0 || v.horas > 24) return 'As horas de trabalho por dia precisam estar entre 0 e 24.';
+      return null;
+    },
+
+    calcular(v, ui) {
+      const dias = v.wip / v.producao;
+      const horas = dias * v.horas;
+      const metade = dias / 2;
+
+      ui.valor(`${num(dias)} dias`);
+      ui.fator('horas', `${num(horas)} h`, `${num(dias)} dias × ${num(v.horas)} h`);
+      ui.conta(`${num(v.wip)} peças ÷ ${num(v.producao)} peças/dia = ${num(dias)} dias`);
+
+      const reduzir = `Com a mesma produção, cortar o estoque em processo pela metade reduz o lead time para ${num(metade)} dias.`;
+
+      if (v.va === undefined) {
+        ui.faixa(null);
+        ui.ocultar('pce', 'espera');
+        ui.destacar(null);
+        ui.diag(`Uma peça que entra hoje no processo leva, em média, ${num(dias)} dias para sair. ${reduzir} Informe o tempo de agregação de valor para ver quanto disso é espera.`);
+        return;
+      }
+
+      const vaHoras = v.va / 60;
+      if (vaHoras > horas) {
+        ui.faixa(null);
+        ui.ocultar('pce', 'espera');
+        ui.destacar(null);
+        ui.diag(`O tempo de agregação de valor (${num(vaHoras)} h) ficou maior que o lead time (${num(horas)} h), o que não é possível. Revise o estoque em processo, a produção diária ou o tempo informado.`);
+        return;
+      }
+
+      const pce = vaHoras / horas;
+      ui.fator('pce', pct(pce), `${num(v.va)} min ÷ (${num(horas)} h × 60)`);
+      ui.fator('espera', `${num(horas - vaHoras)} h`, `${num(horas)} h − ${num(vaHoras)} h`);
+      ui.destacar('espera');
+
+      if (pce >= 0.25) ui.faixa('alto', 'Fluxo classe mundial');
+      else if (pce >= 0.1) ui.faixa('medio', 'Fluxo eficiente');
+      else ui.faixa('baixo', 'Fluxo com muita espera');
+
+      ui.diag(`A peça é trabalhada durante ${pct(pce)} do lead time; no resto, ${pct(1 - pce)}, ela está parada em fila ou estoque. É nessa espera que está o ganho: ${reduzir.charAt(0).toLowerCase()}${reduzir.slice(1)}`);
+    },
+  },
 };
 
 function criarUi(sec) {

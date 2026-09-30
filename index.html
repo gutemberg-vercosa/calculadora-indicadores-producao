@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Indicadores de Produção</title>
   <meta name="description" content="Calcule OEE e takt time, veja a conta passo a passo e entenda o que o resultado significa.">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
   <main>
@@ -15,6 +15,7 @@
       <nav class="abas" role="tablist">
         <button type="button" role="tab" data-aba="oee">OEE</button>
         <button type="button" role="tab" data-aba="takt">Takt time</button>
+        <button type="button" role="tab" data-aba="lead">Lead time</button>
       </nav>
     </header>
 
@@ -141,8 +142,67 @@
         <p>A folga de cerca de 15% absorve variações do dia a dia, como pequenas paradas e trocas.</p>
       </details>
     </section>
+
+    <!-- Lead time -->
+    <section class="calc" data-calc="lead" role="tabpanel" hidden>
+      <p class="intro">Quanto tempo uma peça leva do início ao fim do processo, pela Lei de Little: estoque em processo ÷ produção diária.</p>
+
+      <form novalidate>
+        <fieldset>
+          <legend>Dados do fluxo</legend>
+          <label>Estoque em processo <span class="un">peças</span>
+            <input type="number" name="wip" min="0" step="1" placeholder="ex.: 3000">
+          </label>
+          <label>Produção diária <span class="un">peças/dia</span>
+            <input type="number" name="producao" min="0" step="any" placeholder="ex.: 600">
+          </label>
+          <label>Horas de trabalho por dia <span class="un">h</span>
+            <input type="number" name="horas" min="0" step="any" placeholder="ex.: 16">
+          </label>
+          <label>Tempo de agregação de valor <span class="un">min/peça, opcional</span>
+            <input type="number" name="va" min="0" step="any" placeholder="ex.: 45" data-opcional>
+          </label>
+        </fieldset>
+        <div class="acoes">
+          <button type="button" class="sec" data-acao="exemplo">Preencher exemplo</button>
+          <button type="button" class="sec" data-acao="limpar">Limpar</button>
+        </div>
+      </form>
+
+      <p class="erro" role="alert" hidden></p>
+
+      <div class="resultado" hidden aria-live="polite">
+        <div class="principal">
+          <span class="rot">Lead time</span>
+          <strong data-r="valor"></strong>
+          <span class="faixa" data-r="faixa" hidden></span>
+        </div>
+        <div class="fatores">
+          <div class="fator" data-f="horas"><span class="rot">Lead time em horas de trabalho</span><strong></strong><code></code></div>
+          <div class="fator" data-f="pce" hidden><span class="rot">Eficiência do fluxo</span><strong></strong><code></code></div>
+          <div class="fator" data-f="espera" hidden><span class="rot">Tempo em espera</span><strong></strong><code></code></div>
+        </div>
+        <p class="conta" data-r="conta"></p>
+        <div class="diagnostico">
+          <h2>O que isso significa</h2>
+          <p data-r="diag"></p>
+        </div>
+        <button type="button" data-acao="copiar">Copiar link deste cálculo</button>
+        <span class="copiado" hidden>Link copiado</span>
+      </div>
+
+      <details class="ref">
+        <summary>Como ler a eficiência do fluxo</summary>
+        <ul>
+          <li><span class="dot baixo"></span>Abaixo de 10%: baixa, mas comum; a peça passa a maior parte do tempo esperando</li>
+          <li><span class="dot medio"></span>De 10% a 25%: boa</li>
+          <li><span class="dot alto"></span>25% ou mais: classe mundial</li>
+        </ul>
+        <p>Eficiência do fluxo é a parte do lead time em que a peça está de fato sendo trabalhada. As faixas são referências usuais de manufatura enxuta.</p>
+      </details>
+    </section>
   </main>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=3"></script>
 </body>
 </html>

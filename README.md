@@ -1,6 +1,6 @@
 # Indicadores de Produção
 
-Calculadora de indicadores de produção que mostra a conta de cada resultado e explica o que ele significa. Hoje calcula OEE e takt time.
+Calculadora de indicadores de produção que mostra a conta de cada resultado e explica o que ele significa. Hoje calcula OEE, takt time e lead time.
 
 **Acesse:** https://gutemberg-vercosa.github.io/calculadora-indicadores-producao/
 
@@ -22,6 +22,12 @@ Calculadora de indicadores de produção que mostra a conta de cada resultado e 
 - Com o tempo de ciclo atual (opcional), mostra a capacidade por dia e quanto do takt o ciclo ocupa.
 - Quando o ciclo não atende, mostra quantas peças faltam e o que mudar: reduzir o ciclo, dividir em postos ou aumentar o tempo disponível.
 
+### Lead time
+
+- Calcula quanto tempo uma peça leva do início ao fim do processo, em dias e em horas de trabalho.
+- Com o tempo de agregação de valor (opcional), mostra a eficiência do fluxo e quanto do lead time é espera.
+- Mostra quanto o lead time cai ao reduzir o estoque em processo.
+
 ## Fórmulas
 
 ### OEE
@@ -42,6 +48,14 @@ Calculadora de indicadores de produção que mostra a conta de cada resultado e 
 | Capacidade | tempo disponível ÷ tempo de ciclo atual |
 | Ocupação do takt | tempo de ciclo atual ÷ takt time |
 
+### Lead time
+
+| Indicador | Fórmula |
+|---|---|
+| **Lead time** | estoque em processo ÷ produção diária (Lei de Little) |
+| Eficiência do fluxo | tempo de agregação de valor ÷ lead time |
+| Tempo em espera | lead time − tempo de agregação de valor |
+
 ## Tecnologias
 
 HTML, CSS e JavaScript puro, sem dependências. Publicado com GitHub Pages.
@@ -52,5 +66,4 @@ Basta abrir o `index.html` no navegador.
 
 ## Próximos passos
 
-- Lead time
 - Capacidade produtiva
