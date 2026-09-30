@@ -1,9 +1,21 @@
 const pct = (v) => `${(v * 100).toFixed(1).replace('.', ',')}%`;
 const num = (v) => v.toLocaleString('pt-BR', { maximumFractionDigits: 2 });
 const seg = (s) => (s >= 60 ? `${num(s)} s (${num(s / 60)} min)` : `${num(s)} s`);
+const lista = (itens) => (itens.length > 1 ? `${itens.slice(0, -1).join('; ')}; ou ${itens.at(-1)}` : itens[0]);
+
+// Faixa comum a takt e capacidade: ocupação até 85% tem folga, até 100% está no limite.
+function faixaOcupacao(ui, uso) {
+  if (uso > 1) ui.faixa('baixo', 'Não atende');
+  else if (uso > 0.85) ui.faixa('medio', 'No limite');
+  else ui.faixa('alto', 'Com folga');
+  if (uso > 0.85) ui.destacar('uso');
+}
 
 const CALCULADORAS = {
   oee: {
+    rotulo: 'OEE',
+    tituloDiag: 'Onde está a maior perda',
+    fatores: { disp: 'Disponibilidade', perf: 'Performance', qual: 'Qualidade' },
     exemplo: { planejado: 480, paradas: 47, ciclo: 30, total: 800, boas: 780 },
 
     validar(v) {
@@ -12,7 +24,6 @@ const CALCULADORAS = {
       if (v.ciclo === 0) return 'O tempo de ciclo ideal precisa ser maior que zero.';
       if (v.total === 0) return 'O total produzido precisa ser maior que zero.';
       if (v.boas > v.total) return 'As peças boas não podem passar do total produzido.';
-      return null;
     },
 
     calcular(v, ui) {
@@ -35,8 +46,7 @@ const CALCULADORAS = {
       ui.conta(`${pct(f.disp)} × ${pct(f.perf)} × ${pct(f.qual)} = ${pct(oee)}`);
 
       if (f.perf > 1) {
-        ui.diag('A performance passou de 100%. Isso costuma indicar que o tempo de ciclo ideal está acima do real, ou que o tempo de paradas foi superestimado. Revise esses dados antes de usar o resultado.');
-        return;
+        return ui.diag('A performance passou de 100%. Isso costuma indicar que o tempo de ciclo ideal está acima do real, ou que o tempo de paradas foi superestimado. Revise esses dados antes de usar o resultado.');
       }
       const menor = Object.keys(f).reduce((a, b) => (f[b] < f[a] ? b : a));
       ui.destacar(menor);
@@ -49,6 +59,9 @@ const CALCULADORAS = {
   },
 
   takt: {
+    rotulo: 'Takt time',
+    tituloDiag: 'O que isso significa',
+    fatores: { disp: 'Tempo disponível por dia', cap: 'Capacidade com o ciclo atual', uso: 'Ocupação do takt' },
     exemplo: { turno: 480, pausas: 60, turnos: 2, demanda: 1200, ciclo: 45 },
 
     validar(v) {
@@ -57,7 +70,6 @@ const CALCULADORAS = {
       if (v.turnos === 0) return 'Informe pelo menos um turno por dia.';
       if (v.demanda === 0) return 'A demanda diária precisa ser maior que zero.';
       if (v.ciclo === 0) return 'O tempo de ciclo atual precisa ser maior que zero.';
-      return null;
     },
 
     calcular(v, ui) {
@@ -69,69 +81,56 @@ const CALCULADORAS = {
       ui.conta(`(${num(dispMin)} min × 60) ÷ ${num(v.demanda)} peças = ${num(takt)} s por peça`);
 
       if (v.ciclo === undefined) {
-        ui.faixa(null);
-        ui.ocultar('cap', 'uso');
-        ui.diag(`Para atender a demanda, uma peça precisa sair a cada ${seg(takt)}. Informe o tempo de ciclo atual para comparar com o takt.`);
-        return;
+        return ui.diag(`Para atender a demanda, uma peça precisa sair a cada ${seg(takt)}. Informe o tempo de ciclo atual para comparar com o takt.`);
       }
 
       const capacidade = Math.floor((dispMin * 60) / v.ciclo);
       const uso = v.ciclo / takt;
       ui.fator('cap', `${num(capacidade)} peças/dia`, `(${num(dispMin)} min × 60) ÷ ${num(v.ciclo)} s`);
       ui.fator('uso', pct(uso), `${num(v.ciclo)} s ÷ ${num(takt)} s`);
+      faixaOcupacao(ui, uso);
 
       if (uso > 1) {
-        const estacoes = Math.ceil(v.ciclo / takt);
-        ui.faixa('baixo', 'Não atende');
-        ui.destacar('uso');
-        ui.diag(`O ciclo atual é mais lento que o takt, então faltam ${num(v.demanda - capacidade)} peças por dia. Para fechar a conta, é preciso reduzir o ciclo em ${num(v.ciclo - takt)} s, dividir o trabalho em ${estacoes} postos em paralelo, ou aumentar o tempo disponível (mais turnos ou menos pausas).`);
+        ui.diag(`O ciclo atual é mais lento que o takt, então faltam ${num(v.demanda - capacidade)} peças por dia. Para fechar a conta, é preciso ${lista([
+          `reduzir o ciclo em ${num(v.ciclo - takt)} s`,
+          `dividir o trabalho em ${Math.ceil(uso)} postos em paralelo`,
+          'aumentar o tempo disponível (mais turnos ou menos pausas)',
+        ])}.`);
       } else if (uso > 0.85) {
-        ui.faixa('medio', 'No limite');
-        ui.destacar('uso');
         ui.diag(`O ciclo atende a demanda, mas usa ${pct(uso)} do takt. Sobra pouca margem para paradas e variações: qualquer perda no dia já compromete a entrega.`);
       } else {
-        ui.faixa('alto', 'Com folga');
-        ui.destacar(null);
         ui.diag(`O ciclo atende a demanda com folga e usa ${pct(uso)} do takt. A capacidade extra é de ${num(capacidade - v.demanda)} peças por dia.`);
       }
     },
   },
 
   lead: {
+    rotulo: 'Lead time',
+    tituloDiag: 'O que isso significa',
+    fatores: { horas: 'Lead time em horas de trabalho', pce: 'Eficiência do fluxo', espera: 'Tempo em espera' },
     exemplo: { wip: 3000, producao: 600, horas: 16, va: 45 },
 
     validar(v) {
       if (v.producao === 0) return 'A produção diária precisa ser maior que zero.';
       if (v.horas === 0 || v.horas > 24) return 'As horas de trabalho por dia precisam estar entre 0 e 24.';
-      return null;
     },
 
     calcular(v, ui) {
       const dias = v.wip / v.producao;
       const horas = dias * v.horas;
-      const metade = dias / 2;
+      const reduzir = `Cortar o estoque em processo pela metade, com a mesma produção, reduz o lead time para ${num(dias / 2)} dias.`;
 
       ui.valor(`${num(dias)} dias`);
       ui.fator('horas', `${num(horas)} h`, `${num(dias)} dias × ${num(v.horas)} h`);
       ui.conta(`${num(v.wip)} peças ÷ ${num(v.producao)} peças/dia = ${num(dias)} dias`);
 
-      const reduzir = `Com a mesma produção, cortar o estoque em processo pela metade reduz o lead time para ${num(metade)} dias.`;
-
       if (v.va === undefined) {
-        ui.faixa(null);
-        ui.ocultar('pce', 'espera');
-        ui.destacar(null);
-        ui.diag(`Uma peça que entra hoje no processo leva, em média, ${num(dias)} dias para sair. ${reduzir} Informe o tempo de agregação de valor para ver quanto disso é espera.`);
-        return;
+        return ui.diag(`Uma peça que entra hoje no processo leva, em média, ${num(dias)} dias para sair. ${reduzir} Informe o tempo de agregação de valor para ver quanto disso é espera.`);
       }
 
       const vaHoras = v.va / 60;
       if (vaHoras > horas) {
-        ui.faixa(null);
-        ui.ocultar('pce', 'espera');
-        ui.destacar(null);
-        ui.diag(`O tempo de agregação de valor (${num(vaHoras)} h) ficou maior que o lead time (${num(horas)} h), o que não é possível. Revise o estoque em processo, a produção diária ou o tempo informado.`);
-        return;
+        return ui.diag(`O tempo de agregação de valor (${num(vaHoras)} h) ficou maior que o lead time (${num(horas)} h), o que não é possível. Revise o estoque em processo, a produção diária ou o tempo informado.`);
       }
 
       const pce = vaHoras / horas;
@@ -143,11 +142,14 @@ const CALCULADORAS = {
       else if (pce >= 0.1) ui.faixa('medio', 'Fluxo eficiente');
       else ui.faixa('baixo', 'Fluxo com muita espera');
 
-      ui.diag(`A peça é trabalhada durante ${pct(pce)} do lead time; no resto, ${pct(1 - pce)}, ela está parada em fila ou estoque. É nessa espera que está o ganho: ${reduzir.charAt(0).toLowerCase()}${reduzir.slice(1)}`);
+      ui.diag(`A peça é trabalhada durante ${pct(pce)} do lead time; no resto, ${pct(1 - pce)}, ela está parada em fila ou estoque. É nessa espera que está o ganho. ${reduzir}`);
     },
   },
 
   cap: {
+    rotulo: 'Capacidade efetiva',
+    tituloDiag: 'O que isso significa',
+    fatores: { teorica: 'Capacidade teórica', perda: 'Perda por eficiência', uso: 'Utilização' },
     exemplo: { ciclo: 40, postos: 3, horas: 8, turnos: 2, dias: 22, oee: 75, demanda: 68000 },
 
     validar(v) {
@@ -157,7 +159,6 @@ const CALCULADORAS = {
       if (v.dias === 0 || v.dias > 31) return 'Os dias de trabalho no mês precisam estar entre 1 e 31.';
       if (v.oee === 0 || v.oee > 100) return 'A eficiência precisa estar entre 0% e 100%.';
       if (v.demanda === 0) return 'A demanda mensal precisa ser maior que zero.';
-      return null;
     },
 
     calcular(v, ui) {
@@ -171,70 +172,81 @@ const CALCULADORAS = {
       ui.conta(`${num(teorica)} peças × ${num(v.oee)}% = ${num(efetiva)} peças/mês`);
 
       if (v.demanda === undefined) {
-        ui.faixa(null);
-        ui.ocultar('uso');
-        ui.destacar(null);
-        ui.diag(`A operação entrega cerca de ${num(efetiva)} peças por mês. A eficiência de ${num(v.oee)}% deixa ${num(teorica - efetiva)} peças na mesa: cada ponto de OEE vale cerca de ${num(Math.round(teorica / 100))} peças por mês. Informe a demanda para comparar.`);
-        return;
+        return ui.diag(`A operação entrega cerca de ${num(efetiva)} peças por mês. A eficiência de ${num(v.oee)}% deixa ${num(teorica - efetiva)} peças na mesa: cada ponto de OEE vale cerca de ${num(Math.round(teorica / 100))} peças por mês. Informe a demanda para comparar.`);
       }
 
       const uso = v.demanda / efetiva;
       ui.fator('uso', pct(uso), `${num(v.demanda)} ÷ ${num(efetiva)} peças`);
+      faixaOcupacao(ui, uso);
 
       if (uso > 1) {
         const oeeNecessario = v.demanda / teorica;
-        const turnosNecessarios = Math.ceil(v.demanda / (porTurno * v.dias * (v.oee / 100)));
-        const cicloNecessario = v.ciclo / uso;
+        const turnosNecessarios = Math.ceil(v.turnos * uso);
         const opcoes = [
-          oeeNecessario <= 1 ? `elevar o OEE para ${pct(oeeNecessario)}` : null,
-          turnosNecessarios * v.horas <= 24 ? `trabalhar com ${turnosNecessarios} turnos por dia` : null,
-          `reduzir o tempo de ciclo para ${num(cicloNecessario)} s`,
+          oeeNecessario <= 1 && `elevar o OEE para ${pct(oeeNecessario)}`,
+          turnosNecessarios * v.horas <= 24 && `trabalhar com ${turnosNecessarios} turnos por dia`,
+          `reduzir o tempo de ciclo para ${num(v.ciclo / uso)} s`,
         ].filter(Boolean);
-        ui.faixa('baixo', 'Não atende');
-        ui.destacar('uso');
-        ui.diag(`A demanda passa da capacidade efetiva em ${num(v.demanda - efetiva)} peças por mês. Para fechar a conta, dá para ${opcoes.slice(0, -1).join('; ')}${opcoes.length > 1 ? '; ou ' : ''}${opcoes.at(-1)}, mantendo o restante como está.`);
+        ui.diag(`A demanda passa da capacidade efetiva em ${num(v.demanda - efetiva)} peças por mês. Para fechar a conta, dá para ${lista(opcoes)}, mantendo o restante como está.`);
       } else if (uso > 0.85) {
-        ui.faixa('medio', 'No limite');
-        ui.destacar('uso');
         ui.diag(`A capacidade atende a demanda, mas com ${pct(uso)} de utilização sobram só ${num(efetiva - v.demanda)} peças de margem por mês. Uma queda de eficiência ou um pico de pedidos já gera atraso.`);
       } else {
-        ui.faixa('alto', 'Com folga');
-        ui.destacar(null);
         ui.diag(`A capacidade atende a demanda com ${pct(uso)} de utilização e ${num(efetiva - v.demanda)} peças de folga por mês.`);
       }
     },
   },
 };
 
-function criarUi(sec) {
-  const r = (nome) => sec.querySelector(`[data-r="${nome}"]`);
-  const f = (id) => sec.querySelector(`[data-f="${id}"]`);
+// Monta ações e resultado de cada calculadora a partir do template, e devolve a API usada em calcular().
+function montar(sec) {
+  const calc = CALCULADORAS[sec.dataset.calc];
+  sec.querySelector('form').after(document.getElementById('modelo').content.cloneNode(true));
+
+  const $ = (sel) => sec.querySelector(sel);
+  $('.rotulo').textContent = calc.rotulo;
+  $('.diagnostico h2').textContent = calc.tituloDiag;
+
+  const fatores = {};
+  for (const [id, rotulo] of Object.entries(calc.fatores)) {
+    const el = document.createElement('div');
+    el.className = 'fator';
+    el.innerHTML = '<span></span><strong></strong><code></code>';
+    el.firstChild.textContent = rotulo;
+    $('.fatores').append(el);
+    fatores[id] = el;
+  }
+
+  const faixa = $('.faixa');
   return {
-    valor: (t) => { r('valor').textContent = t; },
-    conta: (t) => { r('conta').textContent = t; },
-    diag: (t) => { r('diag').textContent = t; },
+    reiniciar() {
+      faixa.hidden = true;
+      for (const el of Object.values(fatores)) {
+        el.hidden = true;
+        el.classList.remove('pior');
+      }
+    },
+    valor: (t) => { $('.valor').textContent = t; },
+    conta: (t) => { $('.conta').textContent = t; },
+    diag: (t) => { $('.diagnostico p').textContent = t; },
     faixa(classe, texto) {
-      const el = r('faixa');
-      el.hidden = !classe;
-      if (classe) { el.textContent = texto; el.className = `faixa ${classe}`; }
+      faixa.hidden = false;
+      faixa.textContent = texto;
+      faixa.className = `faixa ${classe}`;
     },
     fator(id, valor, conta) {
-      const el = f(id);
+      const el = fatores[id];
       el.hidden = false;
       el.querySelector('strong').textContent = valor;
       el.querySelector('code').textContent = conta;
     },
-    ocultar: (...ids) => ids.forEach((id) => { f(id).hidden = true; }),
-    destacar: (id) => sec.querySelectorAll('.fator').forEach((el) => el.classList.toggle('pior', el.dataset.f === id)),
+    destacar: (id) => fatores[id].classList.add('pior'),
   };
 }
 
-const inputs = (sec) => [...sec.querySelectorAll('input')];
-
 function lerValores(sec) {
   const v = {};
-  for (const input of inputs(sec)) {
-    const raw = input.value.trim();
+  for (const input of sec.querySelectorAll('input')) {
+    const raw = input.value.trim().replace(',', '.');
     if (raw === '') {
       if (input.hasAttribute('data-opcional')) continue;
       return null;
@@ -244,63 +256,69 @@ function lerValores(sec) {
   return v;
 }
 
-function render(sec) {
+function render(sec, ui) {
   const id = sec.dataset.calc;
-  const calc = CALCULADORAS[id];
   const v = lerValores(sec);
   const erro = sec.querySelector('.erro');
-  const res = sec.querySelector('.resultado');
-  atualizarUrl(id, v);
+  const resultado = sec.querySelector('.resultado');
 
-  if (!v) { erro.hidden = true; res.hidden = true; return; }
-  let msg = Object.values(v).some((n) => !Number.isFinite(n) || n < 0) ? 'Os valores não podem ser negativos.' : null;
-  msg ??= calc.validar(v);
-  if (msg) { erro.textContent = msg; erro.hidden = false; res.hidden = true; return; }
-
-  erro.hidden = true;
-  calc.calcular(v, criarUi(sec));
-  res.hidden = false;
-}
-
-function atualizarUrl(id, v) {
-  const params = new URLSearchParams({ i: id });
-  if (v) for (const [k, n] of Object.entries(v)) params.set(k, n);
+  const params = new URLSearchParams({ i: id, ...v });
   history.replaceState(null, '', `?${params}`);
+
+  const msg = v && (Object.values(v).some((n) => !(n >= 0)) ? 'Informe apenas números positivos.' : CALCULADORAS[id].validar(v));
+  erro.textContent = msg || '';
+  erro.hidden = !msg;
+  resultado.hidden = !v || !!msg;
+  if (resultado.hidden) return;
+
+  ui.reiniciar();
+  CALCULADORAS[id].calcular(v, ui);
 }
 
-function mostrarAba(id) {
-  document.querySelectorAll('.calc').forEach((sec) => { sec.hidden = sec.dataset.calc !== id; });
-  document.querySelectorAll('.abas button').forEach((b) => b.setAttribute('aria-selected', b.dataset.aba === id));
-  render(document.querySelector(`.calc[data-calc="${id}"]`));
-}
-
-function preencher(sec, valores) {
-  for (const input of inputs(sec)) input.value = valores[input.name] ?? '';
-  render(sec);
-}
-
-document.querySelectorAll('.calc').forEach((sec) => {
+const secoes = {};
+for (const sec of document.querySelectorAll('.calc')) {
   const id = sec.dataset.calc;
-  sec.querySelector('form').addEventListener('input', () => render(sec));
-  sec.querySelector('[data-acao="exemplo"]').addEventListener('click', () => preencher(sec, CALCULADORAS[id].exemplo));
-  sec.querySelector('[data-acao="limpar"]').addEventListener('click', () => preencher(sec, {}));
-  sec.querySelector('[data-acao="copiar"]').addEventListener('click', async () => {
+  const ui = montar(sec);
+  const atualizar = () => render(sec, ui);
+  secoes[id] = atualizar;
+
+  for (const input of sec.querySelectorAll('input')) {
+    input.inputMode = 'decimal';
+    input.autocomplete = 'off';
+  }
+  const preencher = (valores) => {
+    for (const input of sec.querySelectorAll('input')) input.value = valores[input.name] ?? '';
+    atualizar();
+  };
+
+  sec.querySelector('form').addEventListener('input', atualizar);
+  sec.querySelector('form').addEventListener('submit', (e) => e.preventDefault());
+  sec.querySelector('[data-acao="exemplo"]').addEventListener('click', () => preencher(CALCULADORAS[id].exemplo));
+  sec.querySelector('[data-acao="limpar"]').addEventListener('click', () => preencher({}));
+
+  const copiar = sec.querySelector('[data-acao="copiar"]');
+  copiar.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText(location.href);
-      const aviso = sec.querySelector('.copiado');
-      aviso.hidden = false;
-      setTimeout(() => { aviso.hidden = true; }, 2000);
+      copiar.textContent = 'Link copiado';
+      setTimeout(() => { copiar.textContent = 'Copiar link deste cálculo'; }, 2000);
     } catch {
       prompt('Copie o link:', location.href);
     }
   });
-});
+}
 
-document.querySelectorAll('.abas button').forEach((b) => b.addEventListener('click', () => mostrarAba(b.dataset.aba)));
+function mostrarAba(id) {
+  for (const sec of document.querySelectorAll('.calc')) sec.hidden = sec.dataset.calc !== id;
+  for (const b of document.querySelectorAll('.abas button')) b.setAttribute('aria-selected', b.dataset.aba === id);
+  secoes[id]();
+}
+
+for (const b of document.querySelectorAll('.abas button')) b.addEventListener('click', () => mostrarAba(b.dataset.aba));
 
 const params = new URLSearchParams(location.search);
-const inicial = CALCULADORAS[params.get('i')] ? params.get('i') : 'oee';
-for (const input of inputs(document.querySelector(`.calc[data-calc="${inicial}"]`))) {
-  if (params.has(input.name)) input.value = params.get(input.name);
+const inicial = params.get('i') in CALCULADORAS ? params.get('i') : 'oee';
+for (const input of document.querySelectorAll(`[data-calc="${inicial}"] input`)) {
+  input.value = params.get(input.name) ?? '';
 }
 mostrarAba(inicial);

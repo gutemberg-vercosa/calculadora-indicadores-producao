@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Indicadores de Produção</title>
-  <meta name="description" content="Calcule OEE e takt time, veja a conta passo a passo e entenda o que o resultado significa.">
-  <link rel="stylesheet" href="style.css?v=5">
+  <meta name="description" content="Calcule OEE, takt time, lead time e capacidade produtiva, com a conta aberta e uma leitura do resultado.">
+  <link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
   <main>
@@ -20,57 +20,18 @@
       </nav>
     </header>
 
-    <!-- OEE -->
     <section class="calc" data-calc="oee" role="tabpanel">
       <p class="intro">Eficiência Global do Equipamento: disponibilidade × performance × qualidade.</p>
-
-      <form novalidate>
+      <form>
         <fieldset>
           <legend>Dados do período</legend>
-          <label>Tempo planejado de produção
-            <span class="campo"><input type="number" name="planejado" min="0" step="any" placeholder="ex.: 480"><span>min</span></span>
-          </label>
-          <label>Tempo de paradas
-            <span class="campo"><input type="number" name="paradas" min="0" step="any" placeholder="ex.: 47"><span>min</span></span>
-          </label>
-          <label>Tempo de ciclo ideal
-            <span class="campo"><input type="number" name="ciclo" min="0" step="any" placeholder="ex.: 30"><span>seg/peça</span></span>
-          </label>
-          <label>Total produzido
-            <span class="campo"><input type="number" name="total" min="0" step="1" placeholder="ex.: 800"><span>peças</span></span>
-          </label>
-          <label>Peças boas
-            <span class="campo"><input type="number" name="boas" min="0" step="1" placeholder="ex.: 780"><span>peças</span></span>
-          </label>
+          <label>Tempo planejado de produção<span class="campo"><input name="planejado" placeholder="ex.: 480"><span>min</span></span></label>
+          <label>Tempo de paradas<span class="campo"><input name="paradas" placeholder="ex.: 47"><span>min</span></span></label>
+          <label>Tempo de ciclo ideal<span class="campo"><input name="ciclo" placeholder="ex.: 30"><span>seg/peça</span></span></label>
+          <label>Total produzido<span class="campo"><input name="total" placeholder="ex.: 800"><span>peças</span></span></label>
+          <label>Peças boas<span class="campo"><input name="boas" placeholder="ex.: 780"><span>peças</span></span></label>
         </fieldset>
-        <div class="acoes">
-          <button type="button" class="sec" data-acao="exemplo">Preencher exemplo</button>
-          <button type="button" class="sec" data-acao="limpar">Limpar</button>
-        </div>
       </form>
-
-      <p class="erro" role="alert" hidden></p>
-
-      <div class="resultado" hidden aria-live="polite">
-        <div class="principal">
-          <span class="rot">OEE</span>
-          <strong data-r="valor"></strong>
-          <span class="faixa" data-r="faixa"></span>
-        </div>
-        <div class="fatores">
-          <div class="fator" data-f="disp"><span class="rot">Disponibilidade</span><strong></strong><code></code></div>
-          <div class="fator" data-f="perf"><span class="rot">Performance</span><strong></strong><code></code></div>
-          <div class="fator" data-f="qual"><span class="rot">Qualidade</span><strong></strong><code></code></div>
-        </div>
-        <p class="conta" data-r="conta"></p>
-        <div class="diagnostico">
-          <h2>Onde está a maior perda</h2>
-          <p data-r="diag"></p>
-        </div>
-        <button type="button" data-acao="copiar">Copiar link deste cálculo</button>
-        <span class="copiado" hidden>Link copiado</span>
-      </div>
-
       <details class="ref">
         <summary>Faixas de referência</summary>
         <ul>
@@ -82,57 +43,18 @@
       </details>
     </section>
 
-    <!-- Takt time -->
     <section class="calc" data-calc="takt" role="tabpanel" hidden>
       <p class="intro">Ritmo em que cada peça precisa sair para atender a demanda: tempo disponível ÷ demanda.</p>
-
-      <form novalidate>
+      <form>
         <fieldset>
           <legend>Dados do dia</legend>
-          <label>Duração do turno
-            <span class="campo"><input type="number" name="turno" min="0" step="any" placeholder="ex.: 480"><span>min</span></span>
-          </label>
-          <label>Pausas planejadas por turno
-            <span class="campo"><input type="number" name="pausas" min="0" step="any" placeholder="ex.: 60"><span>min</span></span>
-          </label>
-          <label>Turnos por dia
-            <span class="campo"><input type="number" name="turnos" min="0" step="1" placeholder="ex.: 2"><span>turnos</span></span>
-          </label>
-          <label>Demanda diária
-            <span class="campo"><input type="number" name="demanda" min="0" step="1" placeholder="ex.: 1200"><span>peças</span></span>
-          </label>
-          <label>Tempo de ciclo atual
-            <span class="campo"><input type="number" name="ciclo" min="0" step="any" placeholder="Opcional, ex.: 45" data-opcional><span>seg/peça</span></span>
-          </label>
+          <label>Duração do turno<span class="campo"><input name="turno" placeholder="ex.: 480"><span>min</span></span></label>
+          <label>Pausas planejadas por turno<span class="campo"><input name="pausas" placeholder="ex.: 60"><span>min</span></span></label>
+          <label>Turnos por dia<span class="campo"><input name="turnos" placeholder="ex.: 2"><span>turnos</span></span></label>
+          <label>Demanda diária<span class="campo"><input name="demanda" placeholder="ex.: 1200"><span>peças</span></span></label>
+          <label>Tempo de ciclo atual<span class="campo"><input name="ciclo" placeholder="Opcional, ex.: 45" data-opcional><span>seg/peça</span></span></label>
         </fieldset>
-        <div class="acoes">
-          <button type="button" class="sec" data-acao="exemplo">Preencher exemplo</button>
-          <button type="button" class="sec" data-acao="limpar">Limpar</button>
-        </div>
       </form>
-
-      <p class="erro" role="alert" hidden></p>
-
-      <div class="resultado" hidden aria-live="polite">
-        <div class="principal">
-          <span class="rot">Takt time</span>
-          <strong data-r="valor"></strong>
-          <span class="faixa" data-r="faixa" hidden></span>
-        </div>
-        <div class="fatores">
-          <div class="fator" data-f="disp"><span class="rot">Tempo disponível por dia</span><strong></strong><code></code></div>
-          <div class="fator" data-f="cap" hidden><span class="rot">Capacidade com o ciclo atual</span><strong></strong><code></code></div>
-          <div class="fator" data-f="uso" hidden><span class="rot">Ocupação do takt</span><strong></strong><code></code></div>
-        </div>
-        <p class="conta" data-r="conta"></p>
-        <div class="diagnostico">
-          <h2>O que isso significa</h2>
-          <p data-r="diag"></p>
-        </div>
-        <button type="button" data-acao="copiar">Copiar link deste cálculo</button>
-        <span class="copiado" hidden>Link copiado</span>
-      </div>
-
       <details class="ref">
         <summary>Como ler o resultado</summary>
         <ul>
@@ -144,54 +66,17 @@
       </details>
     </section>
 
-    <!-- Lead time -->
     <section class="calc" data-calc="lead" role="tabpanel" hidden>
       <p class="intro">Quanto tempo uma peça leva do início ao fim do processo, pela Lei de Little: estoque em processo ÷ produção diária.</p>
-
-      <form novalidate>
+      <form>
         <fieldset>
           <legend>Dados do fluxo</legend>
-          <label>Estoque em processo
-            <span class="campo"><input type="number" name="wip" min="0" step="1" placeholder="ex.: 3000"><span>peças</span></span>
-          </label>
-          <label>Produção diária
-            <span class="campo"><input type="number" name="producao" min="0" step="any" placeholder="ex.: 600"><span>peças/dia</span></span>
-          </label>
-          <label>Horas de trabalho por dia
-            <span class="campo"><input type="number" name="horas" min="0" step="any" placeholder="ex.: 16"><span>h</span></span>
-          </label>
-          <label>Tempo de agregação de valor
-            <span class="campo"><input type="number" name="va" min="0" step="any" placeholder="Opcional, ex.: 45" data-opcional><span>min/peça</span></span>
-          </label>
+          <label>Estoque em processo<span class="campo"><input name="wip" placeholder="ex.: 3000"><span>peças</span></span></label>
+          <label>Produção diária<span class="campo"><input name="producao" placeholder="ex.: 600"><span>peças/dia</span></span></label>
+          <label>Horas de trabalho por dia<span class="campo"><input name="horas" placeholder="ex.: 16"><span>h</span></span></label>
+          <label>Tempo de agregação de valor<span class="campo"><input name="va" placeholder="Opcional, ex.: 45" data-opcional><span>min/peça</span></span></label>
         </fieldset>
-        <div class="acoes">
-          <button type="button" class="sec" data-acao="exemplo">Preencher exemplo</button>
-          <button type="button" class="sec" data-acao="limpar">Limpar</button>
-        </div>
       </form>
-
-      <p class="erro" role="alert" hidden></p>
-
-      <div class="resultado" hidden aria-live="polite">
-        <div class="principal">
-          <span class="rot">Lead time</span>
-          <strong data-r="valor"></strong>
-          <span class="faixa" data-r="faixa" hidden></span>
-        </div>
-        <div class="fatores">
-          <div class="fator" data-f="horas"><span class="rot">Lead time em horas de trabalho</span><strong></strong><code></code></div>
-          <div class="fator" data-f="pce" hidden><span class="rot">Eficiência do fluxo</span><strong></strong><code></code></div>
-          <div class="fator" data-f="espera" hidden><span class="rot">Tempo em espera</span><strong></strong><code></code></div>
-        </div>
-        <p class="conta" data-r="conta"></p>
-        <div class="diagnostico">
-          <h2>O que isso significa</h2>
-          <p data-r="diag"></p>
-        </div>
-        <button type="button" data-acao="copiar">Copiar link deste cálculo</button>
-        <span class="copiado" hidden>Link copiado</span>
-      </div>
-
       <details class="ref">
         <summary>Como ler a eficiência do fluxo</summary>
         <ul>
@@ -203,63 +88,20 @@
       </details>
     </section>
 
-    <!-- Capacidade -->
     <section class="calc" data-calc="cap" role="tabpanel" hidden>
       <p class="intro">Quantas peças por mês a operação consegue entregar: capacidade teórica × eficiência (OEE).</p>
-
-      <form novalidate>
+      <form>
         <fieldset>
           <legend>Dados da operação</legend>
-          <label>Tempo de ciclo
-            <span class="campo"><input type="number" name="ciclo" min="0" step="any" placeholder="ex.: 40"><span>seg/peça</span></span>
-          </label>
-          <label>Máquinas ou postos
-            <span class="campo"><input type="number" name="postos" min="0" step="1" placeholder="ex.: 3"><span>unidades</span></span>
-          </label>
-          <label>Horas por turno
-            <span class="campo"><input type="number" name="horas" min="0" step="any" placeholder="ex.: 8"><span>h</span></span>
-          </label>
-          <label>Turnos por dia
-            <span class="campo"><input type="number" name="turnos" min="0" step="1" placeholder="ex.: 2"><span>turnos</span></span>
-          </label>
-          <label>Dias de trabalho no mês
-            <span class="campo"><input type="number" name="dias" min="0" step="1" placeholder="ex.: 22"><span>dias</span></span>
-          </label>
-          <label>Eficiência esperada (OEE)
-            <span class="campo"><input type="number" name="oee" min="0" max="100" step="any" placeholder="ex.: 75"><span>%</span></span>
-          </label>
-          <label>Demanda mensal
-            <span class="campo"><input type="number" name="demanda" min="0" step="1" placeholder="Opcional, ex.: 60000" data-opcional><span>peças</span></span>
-          </label>
+          <label>Tempo de ciclo<span class="campo"><input name="ciclo" placeholder="ex.: 40"><span>seg/peça</span></span></label>
+          <label>Máquinas ou postos<span class="campo"><input name="postos" placeholder="ex.: 3"><span>unidades</span></span></label>
+          <label>Horas por turno<span class="campo"><input name="horas" placeholder="ex.: 8"><span>h</span></span></label>
+          <label>Turnos por dia<span class="campo"><input name="turnos" placeholder="ex.: 2"><span>turnos</span></span></label>
+          <label>Dias de trabalho no mês<span class="campo"><input name="dias" placeholder="ex.: 22"><span>dias</span></span></label>
+          <label>Eficiência esperada (OEE)<span class="campo"><input name="oee" placeholder="ex.: 75"><span>%</span></span></label>
+          <label>Demanda mensal<span class="campo"><input name="demanda" placeholder="Opcional, ex.: 60000" data-opcional><span>peças</span></span></label>
         </fieldset>
-        <div class="acoes">
-          <button type="button" class="sec" data-acao="exemplo">Preencher exemplo</button>
-          <button type="button" class="sec" data-acao="limpar">Limpar</button>
-        </div>
       </form>
-
-      <p class="erro" role="alert" hidden></p>
-
-      <div class="resultado" hidden aria-live="polite">
-        <div class="principal">
-          <span class="rot">Capacidade efetiva</span>
-          <strong data-r="valor"></strong>
-          <span class="faixa" data-r="faixa" hidden></span>
-        </div>
-        <div class="fatores">
-          <div class="fator" data-f="teorica"><span class="rot">Capacidade teórica</span><strong></strong><code></code></div>
-          <div class="fator" data-f="perda"><span class="rot">Perda por eficiência</span><strong></strong><code></code></div>
-          <div class="fator" data-f="uso" hidden><span class="rot">Utilização</span><strong></strong><code></code></div>
-        </div>
-        <p class="conta" data-r="conta"></p>
-        <div class="diagnostico">
-          <h2>O que isso significa</h2>
-          <p data-r="diag"></p>
-        </div>
-        <button type="button" data-acao="copiar">Copiar link deste cálculo</button>
-        <span class="copiado" hidden>Link copiado</span>
-      </div>
-
       <details class="ref">
         <summary>Como ler a utilização</summary>
         <ul>
@@ -272,6 +114,29 @@
     </section>
   </main>
 
-  <script src="app.js?v=5"></script>
+  <!-- Ações e resultado, iguais em todas as calculadoras; inseridos após cada formulário -->
+  <template id="modelo">
+    <div class="acoes">
+      <button type="button" data-acao="exemplo">Preencher exemplo</button>
+      <button type="button" data-acao="limpar">Limpar</button>
+    </div>
+    <p class="erro" role="alert" hidden></p>
+    <div class="resultado" hidden aria-live="polite">
+      <div class="principal">
+        <span class="rotulo"></span>
+        <strong class="valor"></strong>
+        <span class="faixa" hidden></span>
+      </div>
+      <div class="fatores"></div>
+      <p class="conta"></p>
+      <div class="diagnostico">
+        <h2></h2>
+        <p></p>
+      </div>
+      <button type="button" data-acao="copiar">Copiar link deste cálculo</button>
+    </div>
+  </template>
+
+  <script src="app.js?v=6"></script>
 </body>
 </html>
