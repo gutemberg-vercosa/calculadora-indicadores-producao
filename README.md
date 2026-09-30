@@ -1,6 +1,6 @@
 # Indicadores de Produção
 
-Calculadora de indicadores de produção que mostra a conta de cada resultado e explica o que ele significa. Hoje calcula OEE, takt time e lead time.
+Calculadora de indicadores de produção que mostra a conta de cada resultado e explica o que ele significa. Calcula OEE, takt time, lead time e capacidade produtiva.
 
 **Acesse:** https://gutemberg-vercosa.github.io/calculadora-indicadores-producao/
 
@@ -27,6 +27,12 @@ Calculadora de indicadores de produção que mostra a conta de cada resultado e 
 - Calcula quanto tempo uma peça leva do início ao fim do processo, em dias e em horas de trabalho.
 - Com o tempo de agregação de valor (opcional), mostra a eficiência do fluxo e quanto do lead time é espera.
 - Mostra quanto o lead time cai ao reduzir o estoque em processo.
+
+### Capacidade produtiva
+
+- Calcula a capacidade teórica e a capacidade efetiva por mês, descontando a eficiência (OEE).
+- Mostra quantas peças a eficiência deixa de entregar.
+- Com a demanda mensal (opcional), mostra a utilização e, se não atender, o OEE, o número de turnos ou o tempo de ciclo necessários.
 
 ## Fórmulas
 
@@ -56,6 +62,14 @@ Calculadora de indicadores de produção que mostra a conta de cada resultado e 
 | Eficiência do fluxo | tempo de agregação de valor ÷ lead time |
 | Tempo em espera | lead time − tempo de agregação de valor |
 
+### Capacidade produtiva
+
+| Indicador | Fórmula |
+|---|---|
+| Capacidade teórica | postos × horas por turno × 3.600 ÷ tempo de ciclo × turnos × dias |
+| **Capacidade efetiva** | capacidade teórica × OEE |
+| Utilização | demanda mensal ÷ capacidade efetiva |
+
 ## Tecnologias
 
 HTML, CSS e JavaScript puro, sem dependências. Publicado com GitHub Pages.
@@ -64,6 +78,3 @@ HTML, CSS e JavaScript puro, sem dependências. Publicado com GitHub Pages.
 
 Basta abrir o `index.html` no navegador.
 
-## Próximos passos
-
-- Capacidade produtiva

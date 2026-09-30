@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Indicadores de Produção</title>
   <meta name="description" content="Calcule OEE e takt time, veja a conta passo a passo e entenda o que o resultado significa.">
-  <link rel="stylesheet" href="style.css?v=3">
+  <link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
   <main>
@@ -16,6 +16,7 @@
         <button type="button" role="tab" data-aba="oee">OEE</button>
         <button type="button" role="tab" data-aba="takt">Takt time</button>
         <button type="button" role="tab" data-aba="lead">Lead time</button>
+        <button type="button" role="tab" data-aba="cap">Capacidade</button>
       </nav>
     </header>
 
@@ -201,8 +202,76 @@
         <p>Eficiência do fluxo é a parte do lead time em que a peça está de fato sendo trabalhada. As faixas são referências usuais de manufatura enxuta.</p>
       </details>
     </section>
+
+    <!-- Capacidade -->
+    <section class="calc" data-calc="cap" role="tabpanel" hidden>
+      <p class="intro">Quantas peças por mês a operação consegue entregar: capacidade teórica × eficiência (OEE).</p>
+
+      <form novalidate>
+        <fieldset>
+          <legend>Dados da operação</legend>
+          <label>Tempo de ciclo <span class="un">seg/peça</span>
+            <input type="number" name="ciclo" min="0" step="any" placeholder="ex.: 40">
+          </label>
+          <label>Máquinas ou postos <span class="un">unidades</span>
+            <input type="number" name="postos" min="0" step="1" placeholder="ex.: 3">
+          </label>
+          <label>Horas por turno <span class="un">h</span>
+            <input type="number" name="horas" min="0" step="any" placeholder="ex.: 8">
+          </label>
+          <label>Turnos por dia <span class="un">turnos</span>
+            <input type="number" name="turnos" min="0" step="1" placeholder="ex.: 2">
+          </label>
+          <label>Dias de trabalho no mês <span class="un">dias</span>
+            <input type="number" name="dias" min="0" step="1" placeholder="ex.: 22">
+          </label>
+          <label>Eficiência esperada (OEE) <span class="un">%</span>
+            <input type="number" name="oee" min="0" max="100" step="any" placeholder="ex.: 75">
+          </label>
+          <label>Demanda mensal <span class="un">peças, opcional</span>
+            <input type="number" name="demanda" min="0" step="1" placeholder="ex.: 60000" data-opcional>
+          </label>
+        </fieldset>
+        <div class="acoes">
+          <button type="button" class="sec" data-acao="exemplo">Preencher exemplo</button>
+          <button type="button" class="sec" data-acao="limpar">Limpar</button>
+        </div>
+      </form>
+
+      <p class="erro" role="alert" hidden></p>
+
+      <div class="resultado" hidden aria-live="polite">
+        <div class="principal">
+          <span class="rot">Capacidade efetiva</span>
+          <strong data-r="valor"></strong>
+          <span class="faixa" data-r="faixa" hidden></span>
+        </div>
+        <div class="fatores">
+          <div class="fator" data-f="teorica"><span class="rot">Capacidade teórica</span><strong></strong><code></code></div>
+          <div class="fator" data-f="perda"><span class="rot">Perda por eficiência</span><strong></strong><code></code></div>
+          <div class="fator" data-f="uso" hidden><span class="rot">Utilização</span><strong></strong><code></code></div>
+        </div>
+        <p class="conta" data-r="conta"></p>
+        <div class="diagnostico">
+          <h2>O que isso significa</h2>
+          <p data-r="diag"></p>
+        </div>
+        <button type="button" data-acao="copiar">Copiar link deste cálculo</button>
+        <span class="copiado" hidden>Link copiado</span>
+      </div>
+
+      <details class="ref">
+        <summary>Como ler a utilização</summary>
+        <ul>
+          <li><span class="dot alto"></span>Até 85% da capacidade efetiva: atende com folga</li>
+          <li><span class="dot medio"></span>Entre 85% e 100%: atende, mas no limite</li>
+          <li><span class="dot baixo"></span>Acima de 100%: não atende a demanda</li>
+        </ul>
+        <p>Trabalhar sempre perto de 100% faz filas e atrasos crescerem rápido; uma margem de cerca de 15% absorve variações.</p>
+      </details>
+    </section>
   </main>
 
-  <script src="app.js?v=3"></script>
+  <script src="app.js?v=4"></script>
 </body>
 </html>

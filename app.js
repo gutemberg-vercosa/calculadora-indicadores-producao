@@ -146,6 +146,64 @@ const CALCULADORAS = {
       ui.diag(`A peça é trabalhada durante ${pct(pce)} do lead time; no resto, ${pct(1 - pce)}, ela está parada em fila ou estoque. É nessa espera que está o ganho: ${reduzir.charAt(0).toLowerCase()}${reduzir.slice(1)}`);
     },
   },
+
+  cap: {
+    exemplo: { ciclo: 40, postos: 3, horas: 8, turnos: 2, dias: 22, oee: 75, demanda: 68000 },
+
+    validar(v) {
+      if (v.ciclo === 0) return 'O tempo de ciclo precisa ser maior que zero.';
+      if (v.postos === 0) return 'Informe pelo menos uma máquina ou posto.';
+      if (v.horas === 0 || v.horas * v.turnos > 24) return 'Horas por turno × turnos precisa ficar entre 0 e 24 horas por dia.';
+      if (v.dias === 0 || v.dias > 31) return 'Os dias de trabalho no mês precisam estar entre 1 e 31.';
+      if (v.oee === 0 || v.oee > 100) return 'A eficiência precisa estar entre 0% e 100%.';
+      if (v.demanda === 0) return 'A demanda mensal precisa ser maior que zero.';
+      return null;
+    },
+
+    calcular(v, ui) {
+      const porTurno = (v.postos * v.horas * 3600) / v.ciclo;
+      const teorica = Math.floor(porTurno * v.turnos * v.dias);
+      const efetiva = Math.floor(teorica * (v.oee / 100));
+
+      ui.valor(`${num(efetiva)} peças/mês`);
+      ui.fator('teorica', `${num(teorica)} peças`, `${num(v.postos)} × ${num(v.horas)} h × 3.600 ÷ ${num(v.ciclo)} s × ${num(v.turnos)} × ${num(v.dias)} dias`);
+      ui.fator('perda', `${num(teorica - efetiva)} peças`, `${num(teorica)} × (100% − ${num(v.oee)}%)`);
+      ui.conta(`${num(teorica)} peças × ${num(v.oee)}% = ${num(efetiva)} peças/mês`);
+
+      if (v.demanda === undefined) {
+        ui.faixa(null);
+        ui.ocultar('uso');
+        ui.destacar(null);
+        ui.diag(`A operação entrega cerca de ${num(efetiva)} peças por mês. A eficiência de ${num(v.oee)}% deixa ${num(teorica - efetiva)} peças na mesa: cada ponto de OEE vale cerca de ${num(Math.round(teorica / 100))} peças por mês. Informe a demanda para comparar.`);
+        return;
+      }
+
+      const uso = v.demanda / efetiva;
+      ui.fator('uso', pct(uso), `${num(v.demanda)} ÷ ${num(efetiva)} peças`);
+
+      if (uso > 1) {
+        const oeeNecessario = v.demanda / teorica;
+        const turnosNecessarios = Math.ceil(v.demanda / (porTurno * v.dias * (v.oee / 100)));
+        const cicloNecessario = v.ciclo / uso;
+        const opcoes = [
+          oeeNecessario <= 1 ? `elevar o OEE para ${pct(oeeNecessario)}` : null,
+          turnosNecessarios * v.horas <= 24 ? `trabalhar com ${turnosNecessarios} turnos por dia` : null,
+          `reduzir o tempo de ciclo para ${num(cicloNecessario)} s`,
+        ].filter(Boolean);
+        ui.faixa('baixo', 'Não atende');
+        ui.destacar('uso');
+        ui.diag(`A demanda passa da capacidade efetiva em ${num(v.demanda - efetiva)} peças por mês. Para fechar a conta, dá para ${opcoes.slice(0, -1).join('; ')}${opcoes.length > 1 ? '; ou ' : ''}${opcoes.at(-1)}, mantendo o restante como está.`);
+      } else if (uso > 0.85) {
+        ui.faixa('medio', 'No limite');
+        ui.destacar('uso');
+        ui.diag(`A capacidade atende a demanda, mas com ${pct(uso)} de utilização sobram só ${num(efetiva - v.demanda)} peças de margem por mês. Uma queda de eficiência ou um pico de pedidos já gera atraso.`);
+      } else {
+        ui.faixa('alto', 'Com folga');
+        ui.destacar(null);
+        ui.diag(`A capacidade atende a demanda com ${pct(uso)} de utilização e ${num(efetiva - v.demanda)} peças de folga por mês.`);
+      }
+    },
+  },
 };
 
 function criarUi(sec) {
