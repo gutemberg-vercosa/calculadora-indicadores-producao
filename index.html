@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Calculadora de OEE</title>
+  <meta name="description" content="Calcule o OEE (Eficiência Global do Equipamento), veja a conta passo a passo e descubra onde está a maior perda.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Calculadora de OEE</h1>
+      <p class="sub">Eficiência Global do Equipamento: disponibilidade × performance × qualidade.</p>
+    </header>
+
+    <form id="form" novalidate>
+      <fieldset>
+        <legend>Dados do período</legend>
+
+        <label>Tempo planejado de produção <span class="un">min</span>
+          <input type="number" id="planejado" min="0" step="any" placeholder="ex.: 480" required>
+        </label>
+
+        <label>Tempo de paradas <span class="un">min</span>
+          <input type="number" id="paradas" min="0" step="any" placeholder="ex.: 47" required>
+        </label>
+
+        <label>Tempo de ciclo ideal <span class="un">seg/peça</span>
+          <input type="number" id="ciclo" min="0" step="any" placeholder="ex.: 30" required>
+        </label>
+
+        <label>Total produzido <span class="un">peças</span>
+          <input type="number" id="total" min="0" step="1" placeholder="ex.: 800" required>
+        </label>
+
+        <label>Peças boas <span class="un">peças</span>
+          <input type="number" id="boas" min="0" step="1" placeholder="ex.: 780" required>
+        </label>
+      </fieldset>
+
+      <div class="acoes">
+        <button type="button" id="exemplo" class="sec">Preencher exemplo</button>
+        <button type="button" id="limpar" class="sec">Limpar</button>
+      </div>
+    </form>
+
+    <p id="erro" class="erro" role="alert" hidden></p>
+
+    <section id="resultado" hidden aria-live="polite">
+      <div class="oee">
+        <span class="rot">OEE</span>
+        <strong id="oee-valor"></strong>
+        <span id="oee-faixa" class="faixa"></span>
+      </div>
+
+      <div class="fatores">
+        <div class="fator" id="f-disp"><span class="rot">Disponibilidade</span><strong></strong><code></code></div>
+        <div class="fator" id="f-perf"><span class="rot">Performance</span><strong></strong><code></code></div>
+        <div class="fator" id="f-qual"><span class="rot">Qualidade</span><strong></strong><code></code></div>
+      </div>
+
+      <p class="conta" id="conta"></p>
+
+      <div class="diagnostico">
+        <h2>Onde está a maior perda</h2>
+        <p id="diag"></p>
+      </div>
+
+      <button type="button" id="copiar">Copiar link deste cálculo</button>
+      <span id="copiado" class="copiado" hidden>Link copiado</span>
+    </section>
+
+    <details class="ref">
+      <summary>Faixas de referência</summary>
+      <ul>
+        <li><span class="dot baixo"></span>Abaixo de 65%: baixo, há bastante espaço para melhoria</li>
+        <li><span class="dot medio"></span>De 65% a 85%: típico, aceitável na maioria das operações</li>
+        <li><span class="dot alto"></span>85% ou mais: classe mundial</li>
+      </ul>
+      <p>Referências usuais de mercado para produção discreta; o valor ideal depende do tipo de processo.</p>
+    </details>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
