@@ -1,18 +1,30 @@
-# Calculadora de OEE
+# Indicadores de Produção
 
-Calcula o OEE (Eficiência Global do Equipamento) de um período de produção, mostra a conta de cada fator e aponta onde está a maior perda.
+Calculadora de indicadores de produção que mostra a conta de cada resultado e explica o que ele significa. Hoje calcula OEE e takt time.
 
 **Acesse:** https://gutemberg-vercosa.github.io/calculadora-indicadores-producao/
 
 ## O que ela faz
 
-- Calcula Disponibilidade, Performance, Qualidade e o OEE final.
 - Mostra a conta com os valores preenchidos, para ficar claro de onde vem cada número.
-- Aponta o fator mais baixo e o que costuma causar esse tipo de perda.
-- Classifica o resultado em faixas de referência (baixo, típico, classe mundial).
+- Interpreta o resultado e sugere onde agir.
 - Guarda os valores no link, então dá para compartilhar um cálculo.
 
-## Como o OEE é calculado
+### OEE
+
+- Calcula Disponibilidade, Performance, Qualidade e o OEE final.
+- Aponta o fator mais baixo e o que costuma causar esse tipo de perda.
+- Classifica o resultado em faixas de referência (baixo, típico, classe mundial).
+
+### Takt time
+
+- Calcula o ritmo necessário para atender a demanda diária.
+- Com o tempo de ciclo atual (opcional), mostra a capacidade por dia e quanto do takt o ciclo ocupa.
+- Quando o ciclo não atende, mostra quantas peças faltam e o que mudar: reduzir o ciclo, dividir em postos ou aumentar o tempo disponível.
+
+## Fórmulas
+
+### OEE
 
 | Fator | Fórmula |
 |---|---|
@@ -20,6 +32,15 @@ Calcula o OEE (Eficiência Global do Equipamento) de um período de produção, 
 | Performance | (tempo de ciclo ideal × total produzido) ÷ tempo operando |
 | Qualidade | peças boas ÷ total produzido |
 | **OEE** | Disponibilidade × Performance × Qualidade |
+
+### Takt time
+
+| Indicador | Fórmula |
+|---|---|
+| Tempo disponível | (duração do turno − pausas) × turnos por dia |
+| **Takt time** | tempo disponível ÷ demanda diária |
+| Capacidade | tempo disponível ÷ tempo de ciclo atual |
+| Ocupação do takt | tempo de ciclo atual ÷ takt time |
 
 ## Tecnologias
 
@@ -31,6 +52,5 @@ Basta abrir o `index.html` no navegador.
 
 ## Próximos passos
 
-- Takt time
 - Lead time
 - Capacidade produtiva

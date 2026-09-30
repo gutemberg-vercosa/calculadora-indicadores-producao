@@ -40,6 +40,19 @@ main {
 }
 
 h1 { margin: 0; font-size: 1.75rem; }
+.intro { margin: 0 0 16px; color: var(--muted); }
+
+.abas { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+.abas button {
+  color: var(--muted);
+  background: transparent;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  font-weight: 600;
+}
+.abas button[aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); }
+
+[hidden] { display: none !important; }
 h2 { margin: 0 0 4px; font-size: 1rem; }
 .sub { margin: 4px 0 24px; color: var(--muted); }
 
@@ -86,7 +99,7 @@ button:hover { filter: brightness(1.1); }
 
 .erro { color: var(--baixo); font-weight: 600; }
 
-#resultado {
+.resultado {
   margin-top: 24px;
   padding: 20px;
   background: var(--card);
@@ -96,8 +109,8 @@ button:hover { filter: brightness(1.1); }
 
 .rot { color: var(--muted); font-size: .85rem; }
 
-.oee { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
-.oee strong { font-size: 2.5rem; line-height: 1; }
+.principal { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.principal strong { font-size: 2.5rem; line-height: 1; }
 
 .faixa { padding: 2px 10px; border-radius: 999px; font-size: .85rem; font-weight: 600; color: #fff; }
 .faixa.baixo, .dot.baixo { background: var(--baixo); }

@@ -3,83 +3,144 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Calculadora de OEE</title>
-  <meta name="description" content="Calcule o OEE (Eficiência Global do Equipamento), veja a conta passo a passo e descubra onde está a maior perda.">
+  <title>Indicadores de Produção</title>
+  <meta name="description" content="Calcule OEE e takt time, veja a conta passo a passo e entenda o que o resultado significa.">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main>
     <header>
-      <h1>Calculadora de OEE</h1>
-      <p class="sub">Eficiência Global do Equipamento: disponibilidade × performance × qualidade.</p>
+      <h1>Indicadores de Produção</h1>
+      <p class="sub">Cálculo com a conta aberta e uma leitura do que o resultado significa.</p>
+      <nav class="abas" role="tablist">
+        <button type="button" role="tab" data-aba="oee">OEE</button>
+        <button type="button" role="tab" data-aba="takt">Takt time</button>
+      </nav>
     </header>
 
-    <form id="form" novalidate>
-      <fieldset>
-        <legend>Dados do período</legend>
+    <!-- OEE -->
+    <section class="calc" data-calc="oee" role="tabpanel">
+      <p class="intro">Eficiência Global do Equipamento: disponibilidade × performance × qualidade.</p>
 
-        <label>Tempo planejado de produção <span class="un">min</span>
-          <input type="number" id="planejado" min="0" step="any" placeholder="ex.: 480" required>
-        </label>
+      <form novalidate>
+        <fieldset>
+          <legend>Dados do período</legend>
+          <label>Tempo planejado de produção <span class="un">min</span>
+            <input type="number" name="planejado" min="0" step="any" placeholder="ex.: 480">
+          </label>
+          <label>Tempo de paradas <span class="un">min</span>
+            <input type="number" name="paradas" min="0" step="any" placeholder="ex.: 47">
+          </label>
+          <label>Tempo de ciclo ideal <span class="un">seg/peça</span>
+            <input type="number" name="ciclo" min="0" step="any" placeholder="ex.: 30">
+          </label>
+          <label>Total produzido <span class="un">peças</span>
+            <input type="number" name="total" min="0" step="1" placeholder="ex.: 800">
+          </label>
+          <label>Peças boas <span class="un">peças</span>
+            <input type="number" name="boas" min="0" step="1" placeholder="ex.: 780">
+          </label>
+        </fieldset>
+        <div class="acoes">
+          <button type="button" class="sec" data-acao="exemplo">Preencher exemplo</button>
+          <button type="button" class="sec" data-acao="limpar">Limpar</button>
+        </div>
+      </form>
 
-        <label>Tempo de paradas <span class="un">min</span>
-          <input type="number" id="paradas" min="0" step="any" placeholder="ex.: 47" required>
-        </label>
+      <p class="erro" role="alert" hidden></p>
 
-        <label>Tempo de ciclo ideal <span class="un">seg/peça</span>
-          <input type="number" id="ciclo" min="0" step="any" placeholder="ex.: 30" required>
-        </label>
-
-        <label>Total produzido <span class="un">peças</span>
-          <input type="number" id="total" min="0" step="1" placeholder="ex.: 800" required>
-        </label>
-
-        <label>Peças boas <span class="un">peças</span>
-          <input type="number" id="boas" min="0" step="1" placeholder="ex.: 780" required>
-        </label>
-      </fieldset>
-
-      <div class="acoes">
-        <button type="button" id="exemplo" class="sec">Preencher exemplo</button>
-        <button type="button" id="limpar" class="sec">Limpar</button>
-      </div>
-    </form>
-
-    <p id="erro" class="erro" role="alert" hidden></p>
-
-    <section id="resultado" hidden aria-live="polite">
-      <div class="oee">
-        <span class="rot">OEE</span>
-        <strong id="oee-valor"></strong>
-        <span id="oee-faixa" class="faixa"></span>
-      </div>
-
-      <div class="fatores">
-        <div class="fator" id="f-disp"><span class="rot">Disponibilidade</span><strong></strong><code></code></div>
-        <div class="fator" id="f-perf"><span class="rot">Performance</span><strong></strong><code></code></div>
-        <div class="fator" id="f-qual"><span class="rot">Qualidade</span><strong></strong><code></code></div>
-      </div>
-
-      <p class="conta" id="conta"></p>
-
-      <div class="diagnostico">
-        <h2>Onde está a maior perda</h2>
-        <p id="diag"></p>
+      <div class="resultado" hidden aria-live="polite">
+        <div class="principal">
+          <span class="rot">OEE</span>
+          <strong data-r="valor"></strong>
+          <span class="faixa" data-r="faixa"></span>
+        </div>
+        <div class="fatores">
+          <div class="fator" data-f="disp"><span class="rot">Disponibilidade</span><strong></strong><code></code></div>
+          <div class="fator" data-f="perf"><span class="rot">Performance</span><strong></strong><code></code></div>
+          <div class="fator" data-f="qual"><span class="rot">Qualidade</span><strong></strong><code></code></div>
+        </div>
+        <p class="conta" data-r="conta"></p>
+        <div class="diagnostico">
+          <h2>Onde está a maior perda</h2>
+          <p data-r="diag"></p>
+        </div>
+        <button type="button" data-acao="copiar">Copiar link deste cálculo</button>
+        <span class="copiado" hidden>Link copiado</span>
       </div>
 
-      <button type="button" id="copiar">Copiar link deste cálculo</button>
-      <span id="copiado" class="copiado" hidden>Link copiado</span>
+      <details class="ref">
+        <summary>Faixas de referência</summary>
+        <ul>
+          <li><span class="dot baixo"></span>Abaixo de 65%: baixo, há bastante espaço para melhoria</li>
+          <li><span class="dot medio"></span>De 65% a 85%: típico, aceitável na maioria das operações</li>
+          <li><span class="dot alto"></span>85% ou mais: classe mundial</li>
+        </ul>
+        <p>Referências usuais de mercado para produção discreta; o valor ideal depende do tipo de processo.</p>
+      </details>
     </section>
 
-    <details class="ref">
-      <summary>Faixas de referência</summary>
-      <ul>
-        <li><span class="dot baixo"></span>Abaixo de 65%: baixo, há bastante espaço para melhoria</li>
-        <li><span class="dot medio"></span>De 65% a 85%: típico, aceitável na maioria das operações</li>
-        <li><span class="dot alto"></span>85% ou mais: classe mundial</li>
-      </ul>
-      <p>Referências usuais de mercado para produção discreta; o valor ideal depende do tipo de processo.</p>
-    </details>
+    <!-- Takt time -->
+    <section class="calc" data-calc="takt" role="tabpanel" hidden>
+      <p class="intro">Ritmo em que cada peça precisa sair para atender a demanda: tempo disponível ÷ demanda.</p>
+
+      <form novalidate>
+        <fieldset>
+          <legend>Dados do dia</legend>
+          <label>Duração do turno <span class="un">min</span>
+            <input type="number" name="turno" min="0" step="any" placeholder="ex.: 480">
+          </label>
+          <label>Pausas planejadas por turno <span class="un">min</span>
+            <input type="number" name="pausas" min="0" step="any" placeholder="ex.: 60">
+          </label>
+          <label>Turnos por dia <span class="un">turnos</span>
+            <input type="number" name="turnos" min="0" step="1" placeholder="ex.: 2">
+          </label>
+          <label>Demanda diária <span class="un">peças</span>
+            <input type="number" name="demanda" min="0" step="1" placeholder="ex.: 1200">
+          </label>
+          <label>Tempo de ciclo atual <span class="un">seg/peça, opcional</span>
+            <input type="number" name="ciclo" min="0" step="any" placeholder="ex.: 45" data-opcional>
+          </label>
+        </fieldset>
+        <div class="acoes">
+          <button type="button" class="sec" data-acao="exemplo">Preencher exemplo</button>
+          <button type="button" class="sec" data-acao="limpar">Limpar</button>
+        </div>
+      </form>
+
+      <p class="erro" role="alert" hidden></p>
+
+      <div class="resultado" hidden aria-live="polite">
+        <div class="principal">
+          <span class="rot">Takt time</span>
+          <strong data-r="valor"></strong>
+          <span class="faixa" data-r="faixa" hidden></span>
+        </div>
+        <div class="fatores">
+          <div class="fator" data-f="disp"><span class="rot">Tempo disponível por dia</span><strong></strong><code></code></div>
+          <div class="fator" data-f="cap" hidden><span class="rot">Capacidade com o ciclo atual</span><strong></strong><code></code></div>
+          <div class="fator" data-f="uso" hidden><span class="rot">Ocupação do takt</span><strong></strong><code></code></div>
+        </div>
+        <p class="conta" data-r="conta"></p>
+        <div class="diagnostico">
+          <h2>O que isso significa</h2>
+          <p data-r="diag"></p>
+        </div>
+        <button type="button" data-acao="copiar">Copiar link deste cálculo</button>
+        <span class="copiado" hidden>Link copiado</span>
+      </div>
+
+      <details class="ref">
+        <summary>Como ler o resultado</summary>
+        <ul>
+          <li><span class="dot alto"></span>Ciclo até 85% do takt: atende com folga</li>
+          <li><span class="dot medio"></span>Ciclo entre 85% e 100% do takt: atende, mas no limite</li>
+          <li><span class="dot baixo"></span>Ciclo acima do takt: não atende a demanda</li>
+        </ul>
+        <p>A folga de cerca de 15% absorve variações do dia a dia, como pequenas paradas e trocas.</p>
+      </details>
+    </section>
   </main>
 
   <script src="app.js"></script>
