@@ -4,6 +4,8 @@ Calculadora de indicadores de produção que mostra a conta de cada resultado e 
 
 **Acesse:** https://gutemberg-vercosa.github.io/calculadora-indicadores-producao/
 
+<a href="https://gutemberg-vercosa.github.io/calculadora-indicadores-producao/"><img src="docs/preview.png" width="720" alt="Tela da calculadora mostrando o OEE de 81,3% com os três fatores e o diagnóstico da maior perda"></a>
+
 ## O que ela faz
 
 - Mostra a conta com os valores preenchidos, para ficar claro de onde vem cada número.
@@ -72,7 +74,7 @@ Calculadora de indicadores de produção que mostra a conta de cada resultado e 
 
 ## Tecnologias
 
-HTML, CSS e JavaScript puro, sem dependências. Publicado com GitHub Pages.
+HTML, CSS e JavaScript puro, sem dependências. Layout mobile first, com tema claro e escuro automático. Publicado com GitHub Pages.
 
 ## Rodando localmente
 
