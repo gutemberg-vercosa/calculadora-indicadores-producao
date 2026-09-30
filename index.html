@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Indicadores de Produção</title>
   <meta name="description" content="Calcule OEE e takt time, veja a conta passo a passo e entenda o que o resultado significa.">
-  <link rel="stylesheet" href="style.css?v=4">
+  <link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
   <main>
@@ -27,20 +27,20 @@
       <form novalidate>
         <fieldset>
           <legend>Dados do período</legend>
-          <label>Tempo planejado de produção <span class="un">min</span>
-            <input type="number" name="planejado" min="0" step="any" placeholder="ex.: 480">
+          <label>Tempo planejado de produção
+            <span class="campo"><input type="number" name="planejado" min="0" step="any" placeholder="ex.: 480"><span>min</span></span>
           </label>
-          <label>Tempo de paradas <span class="un">min</span>
-            <input type="number" name="paradas" min="0" step="any" placeholder="ex.: 47">
+          <label>Tempo de paradas
+            <span class="campo"><input type="number" name="paradas" min="0" step="any" placeholder="ex.: 47"><span>min</span></span>
           </label>
-          <label>Tempo de ciclo ideal <span class="un">seg/peça</span>
-            <input type="number" name="ciclo" min="0" step="any" placeholder="ex.: 30">
+          <label>Tempo de ciclo ideal
+            <span class="campo"><input type="number" name="ciclo" min="0" step="any" placeholder="ex.: 30"><span>seg/peça</span></span>
           </label>
-          <label>Total produzido <span class="un">peças</span>
-            <input type="number" name="total" min="0" step="1" placeholder="ex.: 800">
+          <label>Total produzido
+            <span class="campo"><input type="number" name="total" min="0" step="1" placeholder="ex.: 800"><span>peças</span></span>
           </label>
-          <label>Peças boas <span class="un">peças</span>
-            <input type="number" name="boas" min="0" step="1" placeholder="ex.: 780">
+          <label>Peças boas
+            <span class="campo"><input type="number" name="boas" min="0" step="1" placeholder="ex.: 780"><span>peças</span></span>
           </label>
         </fieldset>
         <div class="acoes">
@@ -89,20 +89,20 @@
       <form novalidate>
         <fieldset>
           <legend>Dados do dia</legend>
-          <label>Duração do turno <span class="un">min</span>
-            <input type="number" name="turno" min="0" step="any" placeholder="ex.: 480">
+          <label>Duração do turno
+            <span class="campo"><input type="number" name="turno" min="0" step="any" placeholder="ex.: 480"><span>min</span></span>
           </label>
-          <label>Pausas planejadas por turno <span class="un">min</span>
-            <input type="number" name="pausas" min="0" step="any" placeholder="ex.: 60">
+          <label>Pausas planejadas por turno
+            <span class="campo"><input type="number" name="pausas" min="0" step="any" placeholder="ex.: 60"><span>min</span></span>
           </label>
-          <label>Turnos por dia <span class="un">turnos</span>
-            <input type="number" name="turnos" min="0" step="1" placeholder="ex.: 2">
+          <label>Turnos por dia
+            <span class="campo"><input type="number" name="turnos" min="0" step="1" placeholder="ex.: 2"><span>turnos</span></span>
           </label>
-          <label>Demanda diária <span class="un">peças</span>
-            <input type="number" name="demanda" min="0" step="1" placeholder="ex.: 1200">
+          <label>Demanda diária
+            <span class="campo"><input type="number" name="demanda" min="0" step="1" placeholder="ex.: 1200"><span>peças</span></span>
           </label>
-          <label>Tempo de ciclo atual <span class="un">seg/peça, opcional</span>
-            <input type="number" name="ciclo" min="0" step="any" placeholder="ex.: 45" data-opcional>
+          <label>Tempo de ciclo atual
+            <span class="campo"><input type="number" name="ciclo" min="0" step="any" placeholder="Opcional, ex.: 45" data-opcional><span>seg/peça</span></span>
           </label>
         </fieldset>
         <div class="acoes">
@@ -151,17 +151,17 @@
       <form novalidate>
         <fieldset>
           <legend>Dados do fluxo</legend>
-          <label>Estoque em processo <span class="un">peças</span>
-            <input type="number" name="wip" min="0" step="1" placeholder="ex.: 3000">
+          <label>Estoque em processo
+            <span class="campo"><input type="number" name="wip" min="0" step="1" placeholder="ex.: 3000"><span>peças</span></span>
           </label>
-          <label>Produção diária <span class="un">peças/dia</span>
-            <input type="number" name="producao" min="0" step="any" placeholder="ex.: 600">
+          <label>Produção diária
+            <span class="campo"><input type="number" name="producao" min="0" step="any" placeholder="ex.: 600"><span>peças/dia</span></span>
           </label>
-          <label>Horas de trabalho por dia <span class="un">h</span>
-            <input type="number" name="horas" min="0" step="any" placeholder="ex.: 16">
+          <label>Horas de trabalho por dia
+            <span class="campo"><input type="number" name="horas" min="0" step="any" placeholder="ex.: 16"><span>h</span></span>
           </label>
-          <label>Tempo de agregação de valor <span class="un">min/peça, opcional</span>
-            <input type="number" name="va" min="0" step="any" placeholder="ex.: 45" data-opcional>
+          <label>Tempo de agregação de valor
+            <span class="campo"><input type="number" name="va" min="0" step="any" placeholder="Opcional, ex.: 45" data-opcional><span>min/peça</span></span>
           </label>
         </fieldset>
         <div class="acoes">
@@ -210,26 +210,26 @@
       <form novalidate>
         <fieldset>
           <legend>Dados da operação</legend>
-          <label>Tempo de ciclo <span class="un">seg/peça</span>
-            <input type="number" name="ciclo" min="0" step="any" placeholder="ex.: 40">
+          <label>Tempo de ciclo
+            <span class="campo"><input type="number" name="ciclo" min="0" step="any" placeholder="ex.: 40"><span>seg/peça</span></span>
           </label>
-          <label>Máquinas ou postos <span class="un">unidades</span>
-            <input type="number" name="postos" min="0" step="1" placeholder="ex.: 3">
+          <label>Máquinas ou postos
+            <span class="campo"><input type="number" name="postos" min="0" step="1" placeholder="ex.: 3"><span>unidades</span></span>
           </label>
-          <label>Horas por turno <span class="un">h</span>
-            <input type="number" name="horas" min="0" step="any" placeholder="ex.: 8">
+          <label>Horas por turno
+            <span class="campo"><input type="number" name="horas" min="0" step="any" placeholder="ex.: 8"><span>h</span></span>
           </label>
-          <label>Turnos por dia <span class="un">turnos</span>
-            <input type="number" name="turnos" min="0" step="1" placeholder="ex.: 2">
+          <label>Turnos por dia
+            <span class="campo"><input type="number" name="turnos" min="0" step="1" placeholder="ex.: 2"><span>turnos</span></span>
           </label>
-          <label>Dias de trabalho no mês <span class="un">dias</span>
-            <input type="number" name="dias" min="0" step="1" placeholder="ex.: 22">
+          <label>Dias de trabalho no mês
+            <span class="campo"><input type="number" name="dias" min="0" step="1" placeholder="ex.: 22"><span>dias</span></span>
           </label>
-          <label>Eficiência esperada (OEE) <span class="un">%</span>
-            <input type="number" name="oee" min="0" max="100" step="any" placeholder="ex.: 75">
+          <label>Eficiência esperada (OEE)
+            <span class="campo"><input type="number" name="oee" min="0" max="100" step="any" placeholder="ex.: 75"><span>%</span></span>
           </label>
-          <label>Demanda mensal <span class="un">peças, opcional</span>
-            <input type="number" name="demanda" min="0" step="1" placeholder="ex.: 60000" data-opcional>
+          <label>Demanda mensal
+            <span class="campo"><input type="number" name="demanda" min="0" step="1" placeholder="Opcional, ex.: 60000" data-opcional><span>peças</span></span>
           </label>
         </fieldset>
         <div class="acoes">
@@ -272,6 +272,6 @@
     </section>
   </main>
 
-  <script src="app.js?v=4"></script>
+  <script src="app.js?v=5"></script>
 </body>
 </html>
